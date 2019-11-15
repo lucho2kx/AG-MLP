@@ -78,7 +78,7 @@ public class Cromosoma {
             while (myReader.hasNextLine()) {
                 String data = myReader.nextLine();
                 String[] arreglo = data.split("\t");
-                ArrayList<Double> entradas = new ArrayList();
+                ArrayList<Double> entradas = new ArrayList<Double>();
                 
                 for (int i = 0; i < 7; i++) {
                     entradas.add(Double.parseDouble(arreglo[i]));
