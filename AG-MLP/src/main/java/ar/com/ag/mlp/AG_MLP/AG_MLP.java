@@ -160,19 +160,34 @@ public class AG_MLP {
         	while (generacion < cantGeneraciones) {
         		// Seleccionar la nueva generación
         		double aptitudTotal= 0;
+        		double aptitudAcumulada= 0;
         		// Se obtiene la aptitud total
         		for (int i= 0; i < tamPoblacion; i++) {
         			aptitudTotal= aptitudTotal + poblacion.get(i).getAptitud();
         		}
-        		// Se obtiene la aptitud relativa
+        		// Se obtiene la aptitud relativa y la acumulada
         		for (int i= 0; i < tamPoblacion; i++) {
         			double relApt= poblacion.get(i).getAptitud() / aptitudTotal; 
         			poblacion.get(i).setRelAptitud(relApt);
-        			
+        			aptitudAcumulada= aptitudAcumulada + relApt;
+        			poblacion.get(i).setAcumAptitud(aptitudAcumulada);
         		}
-        		
-        		
-        		
+        		// Se genera un número aleatorio entre 0 y 1
+        		SecureRandom srRuleta = new SecureRandom();
+        		byte[] b = new byte[20];
+				srRuleta.setSeed(b);
+				srRuleta.setSeed(System.currentTimeMillis());
+        		double x= srRuleta.nextDouble();
+        		while ( (x < 0.0)  || (x > 1.0)) {
+        			x= srRuleta.nextDouble();
+        		}
+        		// Se elige el cromosoma cuya aptitud aumulada contiene a x
+        		int posicionCromoElegido= 0;
+        		for (int i= 0; i < tamPoblacion; i++) {
+        			if (poblacion.get(i).getAcumAptitud() > x) {
+        				posicionCromoElegido= i;
+        			}
+        		}
         		// Aplicar Mutación Estructural
         		
         		// Aplicar Mutación de los pesos
