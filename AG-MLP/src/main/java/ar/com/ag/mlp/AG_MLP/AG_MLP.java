@@ -15,7 +15,7 @@ public class AG_MLP {
 		private int cantNeuSalida= 1;
 		private static int cantMaxNeuOculta= 15;
 		private static int tamPoblacion= 20;
-		private int cantGeneraciones= 300;
+		private static int cantGeneraciones= 300;
 		// Mutación paramétrica
 		private double probMutacionNeu= 0.8;
 		
@@ -131,6 +131,7 @@ public class AG_MLP {
 			double menorAptitud= 0.0;
 			double aptitud;
 			int posicion= 0;
+			int generacion= 0;
 			
 	        System.out.println( "Hola Algoritmo Genético! :)" );
 	        
@@ -156,7 +157,34 @@ public class AG_MLP {
         	poblacion.add(poblacion.get(posicion));
         	
         	// Bucle While :))))
-        	
+        	while (generacion < cantGeneraciones) {
+        		// Seleccionar la nueva generación
+        		double aptitudTotal= 0;
+        		// Se obtiene la aptitud total
+        		for (int i= 0; i < tamPoblacion; i++) {
+        			aptitudTotal= aptitudTotal + poblacion.get(i).getAptitud();
+        		}
+        		// Se obtiene la aptitud relativa
+        		for (int i= 0; i < tamPoblacion; i++) {
+        			double relApt= poblacion.get(i).getAptitud() / aptitudTotal; 
+        			poblacion.get(i).setRelAptitud(relApt);
+        			
+        		}
+        		
+        		
+        		
+        		// Aplicar Mutación Estructural
+        		
+        		// Aplicar Mutación de los pesos
+        		
+        		// Evaluar cada cromosoma
+        		
+        		// Guardar el mejor cromosoma
+        		
+        		// generacion= generacion + 1;
+        		generacion= generacion + 1;
+        		
+        	}
         	
         	
 	        
