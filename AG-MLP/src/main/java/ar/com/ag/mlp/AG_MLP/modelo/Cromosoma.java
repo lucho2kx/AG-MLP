@@ -73,7 +73,7 @@ public class Cromosoma {
         double sumaErroresMedios = 0;
 
         try {
-            File myObj = new File("C:\\Users\\Pablo\\Desktop\\dataset-neuroph-procesado.txt");
+            File myObj = new File("src/main/resources/dataset-neuroph-procesado.txt");
             Scanner myReader = new Scanner(myObj);
             while (myReader.hasNextLine()) {
                 String data = myReader.nextLine();
@@ -93,8 +93,8 @@ public class Cromosoma {
                 double salidaNodoSalida = 1 /(1 + Math.exp(-entradaNodoSalida));
                 double salidaEsperada = Double.parseDouble(arreglo[7]);
                 
-                System.out.println("Salida nodo: " + salidaNodoSalida);
-                System.out.println("Salida esperada: " + salidaEsperada);
+               // System.out.println("Salida nodo: " + salidaNodoSalida);
+               // System.out.println("Salida esperada: " + salidaEsperada);
                 
                 sumaErroresMedios += Math.pow((salidaEsperada - salidaNodoSalida), 2);
             }
@@ -104,8 +104,9 @@ public class Cromosoma {
             System.out.println("An error occurred.");
             e.printStackTrace();
         }
-        
-        return (sumaErroresMedios / cantidadPatrones);
+        this.aptitud= (sumaErroresMedios / cantidadPatrones);
+        //System.out.println("ECM= " + this.aptitud);
+        return this.aptitud;
     }
 
     @Override

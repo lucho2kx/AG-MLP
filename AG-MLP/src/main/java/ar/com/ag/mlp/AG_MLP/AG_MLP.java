@@ -58,7 +58,7 @@ public class AG_MLP {
 				cantNeuronasOcultas= srNroNeurona.nextInt(cantMaxNeuOculta)+1;
 
 				cromoMLP= new Cromosoma();
-				// Se setea el peso de Bias de entrada
+				// Se setea el peso de Bias de salida
 				peso= srPesosBias.nextGaussian();
 				while ((peso < -1.0) || (peso > 1.0) ) {
 					peso= srPesosBias.nextGaussian();
@@ -128,16 +128,37 @@ public class AG_MLP {
 		
 		public static void main( String[] args ) {
 			ArrayList<Cromosoma> poblacion;
+			double menorAptitud= 0.0;
+			double aptitud;
+			int posicion= 0;
 			
 	        System.out.println( "Hola Algoritmo Genético! :)" );
 	        
 	        poblacion= inicializarPoblacion();
 	        
 	        for (int i=0; i < poblacion.size(); i++ ) {
-	        	System.out.println( "Cromosoma i="+ i + " => " + poblacion.get(i).toString() );
+	        	// Se calcula la función de evaluación de cada cromosoma 
+	        	aptitud= poblacion.get(i).calcularFuncionDeEvaluacion();
+	        	if (i == 0) {
+	        		menorAptitud= aptitud;
+	        		posicion= 0;
+	        	}
+	        	else {
+	        		if (aptitud < menorAptitud) {
+	        			menorAptitud= aptitud;
+	        			posicion= i;
+	        		}
+	        	}
+	        	System.out.println( "Cromosoma i="+ i + " => aptitud = " + aptitud );
 	        }
-	        
-	        
+        	System.out.println( "El Cromosoma de menor aptitud es "+ posicion + " => aptitud = " + menorAptitud );
+	        // Se guarda el cromosoma con mejor aptitud al final de la población
+        	poblacion.add(poblacion.get(posicion));
+        	
+        	// Bucle While :))))
+        	
+        	
+        	
 	        
 		}
 	
