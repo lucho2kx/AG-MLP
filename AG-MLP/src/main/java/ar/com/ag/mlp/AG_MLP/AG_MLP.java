@@ -9,15 +9,16 @@ import ar.com.ag.mlp.AG_MLP.modelo.Gene;
 public class AG_MLP {
 	
     // Parámetros del problema
-    private double probEliminarNeuOculta= 1.0;
-    private double probAgregarNeuOculta= 0.4;
+    private static double probEliminarNeuOculta= 1.0;
+    private static double probAgregarNeuOculta= 0.4;
     private int cantNeuEntrada= 7;
     private int cantNeuSalida= 1;
     private static int cantMaxNeuOculta= 15;
     private static int tamPoblacion= 20;
     private static int cantGeneraciones= 300;
     // Mutación paramétrica
-    private double probMutacionNeu= 0.8;
+    private static double probMutacionNeu= 0.8;
+    private static double desviacionEstandar = 1;
 		
     // Se inicializa la población
     private static ArrayList<Cromosoma> inicializarPoblacion() {
@@ -117,7 +118,7 @@ public class AG_MLP {
         System.out.println( "Hola Algoritmo Genético! :)" );
 
         poblacion= inicializarPoblacion();
-
+        
         for (int i=0; i < poblacion.size(); i++ ) {
             // Se calcula la función de evaluación de cada cromosoma 
             aptitud= poblacion.get(i).calcularFuncionDeEvaluacion();
@@ -169,10 +170,9 @@ public class AG_MLP {
                     posicionCromoElegido= i;
                 }
             }
-            // Aplicar Mutación Estructural
-
-            // Aplicar Mutación de los pesos
-
+            // Aplicar Mutación Estructural y Mutación Paramétrica
+            poblacion = mutacion(poblacion);
+           
             // Evaluar cada cromosoma
 
             // Guardar el mejor cromosoma
@@ -181,4 +181,55 @@ public class AG_MLP {
             generacion= generacion + 1;
         }
     }
+    
+    private static ArrayList<Cromosoma> mutacion(ArrayList<Cromosoma> poblacion) {
+        
+        for (int i= 0; i < tamPoblacion; i++) {
+            
+            //Mutación Estructural
+            
+            //AdicionarNeuronasOcultas
+            if(poblacion.get(i).getGenes().size() < cantMaxNeuOculta) {
+                double numeroAleatorio = Math.random();
+                if(numeroAleatorio < probAgregarNeuOculta) {  
+                    Gene gen = new Gene(0, 0, 0, 0, 0, 0, 0, 0, 0);
+                    poblacion.get(i).getGenes().add(gen);
+                }    
+            }
+            
+            //EliminarNeuronasOcultas
+            if(poblacion.get(i).getGenes().size() >= 1) {
+                double numeroAleatorio = Math.random();
+                if(numeroAleatorio < probEliminarNeuOculta) {  
+                    poblacion.get(i).getGenes().remove(0);
+                } 
+            }
+            
+            //Acá deberíamos reducir los parametros probEliminarNeuOculta y probAgregarNeuOculta
+        
+            //MutacionParametrica
+            
+            for (Gene g : poblacion.get(i).getGenes()) {
+                double numeroAleatorio = Math.random();
+                if(numeroAleatorio < probMutacionNeu) {
+                    //Sumar el valor de la gaussiana
+                    g.setWb(g.getWb() + numeroAleatorio);
+                    g.setW1(g.getW1() + numeroAleatorio);
+                    g.setW2(g.getW2() + numeroAleatorio);
+                    g.setW3(g.getW3() + numeroAleatorio);
+                    g.setW4(g.getW4() + numeroAleatorio);
+                    g.setW5(g.getW5() + numeroAleatorio);
+                    g.setW6(g.getW6() + numeroAleatorio);
+                    g.setW7(g.getW7() + numeroAleatorio);
+                    g.setWs(g.getWs() + numeroAleatorio);
+                }
+            }
+        }
+        
+        
+        
+        return poblacion;
+    }
+    
+    
 }
