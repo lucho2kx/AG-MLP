@@ -107,80 +107,116 @@ public class AG_MLP {
         }
         return poblacion;
     }
-		
-    public static void main( String[] args ) {
-        ArrayList<Cromosoma> poblacion;
-        double menorAptitud= 0.0;
-        double aptitud;
-        int posicion= 0;
-        int generacion= 0;
-
-        System.out.println( "Hola Algoritmo Genético! :)" );
-
-        poblacion= inicializarPoblacion();
-        
-        for (int i=0; i < poblacion.size(); i++ ) {
-            // Se calcula la función de evaluación de cada cromosoma 
-            aptitud= poblacion.get(i).calcularFuncionDeEvaluacion();
-            if (i == 0) {
-                menorAptitud= aptitud;
-                posicion= 0;
-            }
-            else {
-                if (aptitud < menorAptitud) {
-                    menorAptitud= aptitud;
-                    posicion= i;
-                }
-            }
-            System.out.println( "Cromosoma i="+ i + " => aptitud = " + aptitud );
+    
+    /**
+     * Se selecciona un cromosoma de la población,
+     * se aplica el proceso conocido como la rueda
+     * de la ruleta.
+     
+     * @param poblacion
+     * @return posicionCromoElegido
+     */
+    private static int seleccionarCromosomaPoblacion(ArrayList<Cromosoma> poblacion) {
+    	// Seleccionar la nueva generación
+        double aptitudTotal= 0;
+        double aptitudAcumulada= 0;
+        // Se obtiene la aptitud total
+        for (int i= 0; i < tamPoblacion; i++) {
+            aptitudTotal= aptitudTotal + poblacion.get(i).getAptitud();
         }
-        System.out.println( "El Cromosoma de menor aptitud es "+ posicion + " => aptitud = " + menorAptitud );
-        // Se guarda el cromosoma con mejor aptitud al final de la población
-        poblacion.add(poblacion.get(posicion));
-
-        // Bucle While :))))
-        while (generacion < cantGeneraciones) {
-            // Seleccionar la nueva generación
-            double aptitudTotal= 0;
-            double aptitudAcumulada= 0;
-            // Se obtiene la aptitud total
-            for (int i= 0; i < tamPoblacion; i++) {
-                aptitudTotal= aptitudTotal + poblacion.get(i).getAptitud();
-            }
-            // Se obtiene la aptitud relativa y la acumulada
-            for (int i= 0; i < tamPoblacion; i++) {
-                double relApt= poblacion.get(i).getAptitud() / aptitudTotal; 
-                poblacion.get(i).setRelAptitud(relApt);
-                aptitudAcumulada= aptitudAcumulada + relApt;
-                poblacion.get(i).setAcumAptitud(aptitudAcumulada);
-            }
-            // Se genera un número aleatorio entre 0 y 1
-            SecureRandom srRuleta = new SecureRandom();
-            byte[] b = new byte[20];
-            srRuleta.setSeed(b);
-            srRuleta.setSeed(System.currentTimeMillis());
-            double x= srRuleta.nextDouble();
-            while ( (x < 0.0)  || (x > 1.0)) {
-                x= srRuleta.nextDouble();
-            }
-            // Se elige el cromosoma cuya aptitud aumulada contiene a x
-            int posicionCromoElegido= 0;
-            for (int i= 0; i < tamPoblacion; i++) {
-                if (poblacion.get(i).getAcumAptitud() > x) {
-                    posicionCromoElegido= i;
-                }
-            }
-            // Aplicar Mutación Estructural y Mutación Paramétrica
-            poblacion = mutacion(poblacion);
-           
-            // Evaluar cada cromosoma
-
-            // Guardar el mejor cromosoma
-
-            // generacion= generacion + 1;
-            generacion= generacion + 1;
+        // Se obtiene la aptitud relativa y la acumulada
+        for (int i= 0; i < tamPoblacion; i++) {
+            double relApt= poblacion.get(i).getAptitud() / aptitudTotal; 
+            poblacion.get(i).setRelAptitud(relApt);
+            aptitudAcumulada= aptitudAcumulada + relApt;
+            poblacion.get(i).setAcumAptitud(aptitudAcumulada);
         }
+        // Se genera un número aleatorio entre 0 y 1
+        SecureRandom srRuleta = new SecureRandom();
+        byte[] b = new byte[20];
+        srRuleta.setSeed(b);
+        srRuleta.setSeed(System.currentTimeMillis());
+        double x= srRuleta.nextDouble();
+        while ( (x < 0.0)  || (x > 1.0)) {
+            x= srRuleta.nextDouble();
+        }
+        // Se elige el cromosoma cuya aptitud aumulada contiene a x
+        int posicionCromoElegido= 0;
+        for (int i= 0; i < tamPoblacion; i++) {
+            if (poblacion.get(i).getAcumAptitud() > x) {
+                posicionCromoElegido= i;
+            }
+        }
+
+        return posicionCromoElegido;
     }
+		
+    private static ArrayList<Cromosoma> mutacionEstructural(ArrayList<Cromosoma> poblacion, int posicionCromosoma) {
+    	int cantNeuronaOculta= poblacion.get(posicionCromosoma).getGenes().size();
+    	
+    	// Para agregar neurona en la capa oculta
+    	if (cantNeuronaOculta < cantMaxNeuOculta) {
+			// Se genera un nro aleatorio entre 0 y 1
+    		SecureRandom srNroAleatorio = new SecureRandom();
+			byte[] b = new byte[20];
+			srNroAleatorio.setSeed(b);
+			srNroAleatorio.setSeed(System.currentTimeMillis());
+		    double x= srNroAleatorio.nextDouble();
+		    while ( (x < 0.0)  || (x > 1.0)) {
+		    	x= srNroAleatorio.nextDouble();
+		    }
+			// Se agrega una neurona oculta si x es menor al la probabilidad de agregar neurona
+			if (x < probAgregarNeuOculta) {  
+                Gene gen = new Gene(0, 0, 0, 0, 0, 0, 0, 0, 0);
+                poblacion.get(posicionCromosoma).getGenes().add(gen);
+            }
+		}
+    	
+    	// Para eliminar neurona en la capa oculta
+    	if (cantNeuronaOculta > 1) {
+    		// Se genera un nro aleatorio entre 0 y 1
+    		SecureRandom srNroAleatorio = new SecureRandom();
+			byte[] b = new byte[20];
+			srNroAleatorio.setSeed(b);
+			srNroAleatorio.setSeed(System.currentTimeMillis());
+		    double x= srNroAleatorio.nextDouble();
+		    while ( (x < 0.0)  || (x > 1.0)) {
+		    	x= srNroAleatorio.nextDouble();
+		    }
+			// Se elimina una neurona oculta si x es menor al la probabilidad de eliminar neurona
+			if (x < probEliminarNeuOculta) {
+				poblacion.get(posicionCromosoma).getGenes().remove(0);
+			}
+    	}
+    	
+    	// Se calcula la aptitud o función evaluación 
+    	poblacion.get(posicionCromosoma).calcularFuncionDeEvaluacion();
+    	
+    	return poblacion;
+    }
+    
+    private static ArrayList<Cromosoma> mutacionParametrica(ArrayList<Cromosoma> poblacion, int posicionCromosoma) {
+    	
+    	if (poblacion.get(posicionCromosoma).getGenes().size() < cantMaxNeuOculta) {
+			// Se genera un nro aleatorio entre 0 y 1
+    		SecureRandom srNroAleatorio = new SecureRandom();
+			byte[] b = new byte[20];
+			srNroAleatorio.setSeed(b);
+			srNroAleatorio.setSeed(System.currentTimeMillis());
+		    double x= srNroAleatorio.nextDouble();
+		    while ( (x < 0.0)  || (x > 1.0)) {
+		    	x= srNroAleatorio.nextDouble();
+		    }
+			// Se agrega una neurona oculta si x es menor al la probabilidad de agregar neurona
+			if(x < probAgregarNeuOculta) {  
+                Gene gen = new Gene(0, 0, 0, 0, 0, 0, 0, 0, 0);
+                poblacion.get(posicionCromosoma).getGenes().add(gen);
+            }    
+        }
+    	
+    	return poblacion;
+    }
+    
     
     private static ArrayList<Cromosoma> mutacion(ArrayList<Cromosoma> poblacion) {
         
@@ -231,5 +267,54 @@ public class AG_MLP {
         return poblacion;
     }
     
+    
+    public static void main( String[] args ) {
+        ArrayList<Cromosoma> poblacion;
+        double menorAptitud= 0.0;
+        double aptitud;
+        int posicion= 0;
+        int generacion= 0;
+
+        System.out.println( "Hola Algoritmo Genético! :)" );
+
+        poblacion= inicializarPoblacion();
+        
+        for (int i=0; i < poblacion.size(); i++ ) {
+            // Se calcula la función de evaluación de cada cromosoma 
+            aptitud= poblacion.get(i).calcularFuncionDeEvaluacion();
+            if (i == 0) {
+                menorAptitud= aptitud;
+                posicion= 0;
+            }
+            else {
+                if (aptitud < menorAptitud) {
+                    menorAptitud= aptitud;
+                    posicion= i;
+                }
+            }
+            System.out.println( "Cromosoma i="+ i + " => aptitud = " + aptitud );
+        }
+        System.out.println( "El Cromosoma de menor aptitud es "+ posicion + " => aptitud = " + menorAptitud );
+        // Se guarda el cromosoma con mejor aptitud al final de la población
+        poblacion.add(poblacion.get(posicion));
+
+        // Bucle While :))))
+        while (generacion < cantGeneraciones) {
+            // Seleccionar el cromosoma de la población
+        	int posicionMejorCromosoma= seleccionarCromosomaPoblacion(poblacion);
+        	
+             // Aplicar Mutación Estructural y Mutación Paramétrica
+            poblacion = mutacion(poblacion);
+           
+            // Evaluar cada cromosoma
+
+            // Guardar el mejor cromosoma
+
+            // generacion= generacion + 1;
+            generacion= generacion + 1;
+        }
+    }
+    
+ 
     
 }
