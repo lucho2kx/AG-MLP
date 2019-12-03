@@ -5,7 +5,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class Cromosoma {
+public class Cromosoma implements Cloneable {
 	
     private ArrayList<Gene> genes;
     // apSesgo= wb
@@ -113,5 +113,15 @@ public class Cromosoma {
     public String toString() {
         return "Cromosoma [genes=" + genes + ", apSesgo=" + apSesgo + ", nMax=" + nMax + ", aptitud=" + aptitud
                             + ", relAptitud=" + relAptitud + ", acumAptitud=" + acumAptitud + "]";
+    }
+    
+    public Cromosoma clone(){
+        Cromosoma obj=null;
+        try{
+            obj=(Cromosoma)super.clone();
+        }catch(CloneNotSupportedException ex){
+            System.out.println(" no se puede duplicar");
+        }
+        return obj;
     }
 }

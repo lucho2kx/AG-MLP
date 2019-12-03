@@ -9,11 +9,11 @@ import ar.com.ag.mlp.AG_MLP.modelo.Gene;
 public class AG_MLP {
 	
     // Parámetros del problema
-    private static double probEliminarNeuOculta= 1.0;
+    private static double probEliminarNeuOculta= 0.6;
     private static double probAgregarNeuOculta= 0.4;
-    private static int cantMaxNeuOculta= 15;
-    private static int tamPoblacion= 20;
-    private static int cantGeneraciones= 300;
+    private static int cantMaxNeuOculta= 3;
+    private static int tamPoblacion= 3;
+    private static int cantGeneraciones= 2;
     // Mutación paramétrica
     private static double probMutacionNeu= 0.8;
     private static double desviacionEstandar = 1.0;
@@ -30,8 +30,6 @@ public class AG_MLP {
     private static double probMutacionNeuMinima= 0.1;
     private static double desviacionEstandarMinima = 0.1;
     
-    
-    // 
     /**
      * Se genera de manera aleatoria los individuos de la población. 
      * 
@@ -133,28 +131,29 @@ public class AG_MLP {
         while ( (x < 0.0)  || (x > 1.0)) {
             x= srRuleta.nextDouble();
         }
+        System.out.println("Valor elegido: " + x);
         // Se elige el cromosoma cuya aptitud aumulada contiene a x
-        
         for (i= 0; i < tamPoblacion; i++) {
-        	unCromo= poblacion.get(i);
-        	//System.out.println( "El Cromosoma es index= "+ i + " aptitudAcumulada= " + unCromo.getAcumAptitud());
+            unCromo= poblacion.get(i);
+            //System.out.println( "El Cromosoma es index= "+ i + " aptitudAcumulada= " + unCromo.getAcumAptitud());
             if (unCromo.getAcumAptitud() >= x) {
                 posicionCromoElegido= i;
                 break;
             }
         }
-      //  System.out.println( "El Cromosoma seleccionado es index="+ posicionCromoElegido + " => aptitudAcumulada= " + poblacion.get(posicionCromoElegido).getAcumAptitud() + " => x= " + x );
-       
+        System.out.println( "El Cromosoma seleccionado es index="+ posicionCromoElegido + " => aptitudAcumulada= " + poblacion.get(posicionCromoElegido).getAcumAptitud() + " => x= " + x );
         return poblacion.get(posicionCromoElegido);
     }
 		
     private static ArrayList<Cromosoma> mutacion(ArrayList<Cromosoma> poblacion) { 
+        
         int i;
         
     	numeroAleatorio.setSeed(new byte[20]);
-		numeroAleatorio.setSeed(System.currentTimeMillis());
-		System.out.println( "Se aplica mutación a la población" );
-	    for (i= 0; i < tamPoblacion; i++) {
+        numeroAleatorio.setSeed(System.currentTimeMillis());
+        System.out.println( "Se aplica mutación a la población" );
+        
+        for (i= 0; i < tamPoblacion; i++) {
             
             //Mutación Estructural
             
@@ -231,8 +230,8 @@ public class AG_MLP {
         
         // Se guarda el cromosoma con mejor aptitud al final de la población
         if (mejorAptitud < poblacion.get(tamPoblacion).getAptitud()) {
-        	poblacion.remove(tamPoblacion);
-        	poblacion.add(poblacion.get(posicion));
+            poblacion.remove(tamPoblacion);
+            poblacion.add(poblacion.get(posicion));
         }
        
     	return poblacion;
@@ -256,16 +255,14 @@ public class AG_MLP {
             System.out.println( "Cromosoma i= "+ i + " Aptitud Acumulada="+ aptitudAcumulada + " Aptitud relativa="+ relApt + " Aptitud="+ poblacion.get(i).getAptitud());
             poblacion.get(i).setAcumAptitud(aptitudAcumulada);
         }
-    	
-        
-    	for (i=0; i < tamPoblacion; i++) {
-    		// Seleccionar el cromosoma de la población
-        	Cromosoma unCromo= seleccionarCromosomaPoblacion(poblacion);
-        	System.out.println( "Cromosoma i= "+ i + " "+ unCromo.getAptitud());
-    		// Generacion poblacion
-    		poblacionNueva.add(unCromo);
+    	boolean b = false;
+        for (i=0; i < tamPoblacion; i++) {
+            // Seleccionar el cromosoma de la población
+            Cromosoma unCromo= seleccionarCromosomaPoblacion(poblacion).clone();
+            System.out.println( "Cromosoma i= "+ i + " "+ unCromo.getAptitud());
+            // Generacion poblacion
+            poblacionNueva.add(unCromo);
     	}
-    	
     	
     	// Se guarda el mejor cromosoma de la generación anterior
     	poblacionNueva.add(poblacion.get(tamPoblacion));
@@ -301,7 +298,6 @@ public class AG_MLP {
     public static Double formatearDecimales(Double numero, Integer numeroDecimales) {
     	
     	return Math.round(numero * Math.pow(10, numeroDecimales)) / Math.pow(10, numeroDecimales);
-    
     }
     
     public static void main(String[] args) {
@@ -316,7 +312,7 @@ public class AG_MLP {
 
         System.out.println( "*************** Se inicializa la población ***************");
         poblacion= inicializarPoblacion();
-        
+        System.out.println(poblacion.size());
         for (int i=0; i < poblacion.size(); i++ ) {
             // Se calcula la función de evaluación de cada cromosoma 
             aptitud= poblacion.get(i).calcularFuncionDeEvaluacion();
@@ -330,20 +326,20 @@ public class AG_MLP {
                     posicion= i;
                 }
             }
-           // System.out.println( "Cromosoma i="+ i + " => aptitud = " + aptitud );
+            System.out.println( "Cromosoma i="+ i + " => aptitud = " + aptitud );
         }
-        //System.out.println( "El Cromosoma de menor aptitud es "+ posicion + " => aptitud = " + mejorAptitud );
+        System.out.println( "El Cromosoma de menor aptitud es "+ posicion + " => aptitud = " + mejorAptitud );
         // Se guarda el cromosoma con mejor aptitud al final de la población
         poblacion.add(poblacion.get(posicion));
 
         // Bucle While :))))
         while (generacion < cantGeneraciones) {
-        	System.out.println( "*************** Generación "+ generacion +" ***************");
-        	
-        	System.out.println( "*************** Selecciona Nueva Población ***************");
-        	// Se selecciona la población nueva.
-        	poblacionNueva= seleccionarNuevaPoblacion(poblacion);
-        	
+            System.out.println( "*************** Generación "+ generacion +" ***************");
+
+            System.out.println( "*************** Selecciona Nueva Población ***************");
+            // Se selecciona la población nueva.
+            poblacionNueva= seleccionarNuevaPoblacion(poblacion);
+            
             System.out.println( "*************** Se aplica mutación a la Nueva Población ***************");
         	// Se aplica Mutación Estructural y Mutación Paramétrica
             poblacionMutada= mutacion(poblacionNueva);
@@ -351,7 +347,7 @@ public class AG_MLP {
             System.out.println( "*************** Se evalua a la Nueva Población ***************");
         	// Se evalua cada cromosoma y se guarda el mejor al final de la lista
             poblacionEvaluada= evaluarPoblacion(poblacionMutada);
-            
+            System.out.println("Población evaluada: " + poblacionEvaluada.get(tamPoblacion));
             poblacion= poblacionEvaluada;
             
             // Se modifican los parámetros de probabilidades y desviación estandar
@@ -361,7 +357,4 @@ public class AG_MLP {
             generacion= generacion + 1;
         }
     }
-    
- 
-    
 }
