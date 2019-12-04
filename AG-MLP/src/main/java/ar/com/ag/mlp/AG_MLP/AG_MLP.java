@@ -9,14 +9,14 @@ import ar.com.ag.mlp.AG_MLP.modelo.Gene;
 public class AG_MLP {
 	
     // Parámetros del problema
-    private static double probEliminarNeuOculta= 0.6;
-    private static double probAgregarNeuOculta= 0.4;
+    public static double probEliminarNeuOculta= 1.0;
+    public static double probAgregarNeuOculta= 0.4;
     private static int cantMaxNeuOculta= 3;
     private static int tamPoblacion= 3;
     private static int cantGeneraciones= 2;
     // Mutación paramétrica
-    private static double probMutacionNeu= 0.8;
-    private static double desviacionEstandar = 1.0;
+    public static double probMutacionNeu= 0.8;
+    public static double desviacionEstandar = 1.0;
     
     // Variables para obtener números aleatotios 
     private static SecureRandom srRuleta = new SecureRandom();
@@ -25,10 +25,16 @@ public class AG_MLP {
     private static SecureRandom srPesosGen = new SecureRandom();
     private static SecureRandom srPesosBias = new SecureRandom();	
     
-    private static double probEliminarNeuOcultaMinima= 0.1;
-    private static double probAgregarNeuOcultaMinima= 0.1;
-    private static double probMutacionNeuMinima= 0.1;
-    private static double desviacionEstandarMinima = 0.1;
+ // Variables para modificar parámetros 
+    private static double probEliminarNeuOcultaMaxima= 1.0;
+    private static double probAgregarNeuOcultaMaxima= 0.4;
+    private static double probMutacionNeuMaxima= 0.8;
+    private static double desviacionEstandarMaxima = 1.0;
+    
+    private static double probEliminarNeuOcultaMinima= 0.05;
+    private static double probAgregarNeuOcultaMinima= 0.05;
+    private static double probMutacionNeuMinima= 0.05;
+    private static double desviacionEstandarMinima = 0.05;
     
     /**
      * Se genera de manera aleatoria los individuos de la población. 
@@ -255,7 +261,7 @@ public class AG_MLP {
             System.out.println( "Cromosoma i= "+ i + " Aptitud Acumulada="+ aptitudAcumulada + " Aptitud relativa="+ relApt + " Aptitud="+ poblacion.get(i).getAptitud());
             poblacion.get(i).setAcumAptitud(aptitudAcumulada);
         }
-    	boolean b = false;
+    	//boolean b = false;
         for (i=0; i < tamPoblacion; i++) {
             // Seleccionar el cromosoma de la población
             Cromosoma unCromo= seleccionarCromosomaPoblacion(poblacion).clone();
@@ -273,21 +279,21 @@ public class AG_MLP {
     private static void modificarParametros(int generacion) {
     	
     	// Se actualiza la probabilidad de eliminar una neurona en capa oculta
-    	double m= (probEliminarNeuOcultaMinima - probEliminarNeuOculta) / (cantGeneraciones - 1) ;
+    	double m= (probEliminarNeuOcultaMinima - probEliminarNeuOcultaMaxima) / (cantGeneraciones - 1) ;
     	
-    	probEliminarNeuOculta= formatearDecimales(((m * (generacion - probEliminarNeuOculta)) + 1), 2);
+    	probEliminarNeuOculta= formatearDecimales(((m * (generacion - 1)) + probEliminarNeuOcultaMaxima), 2);
     	
     	// Se actualiza la probabilidad de adicionar una neurona en capa oculta
-    	double t= (probAgregarNeuOcultaMinima - probAgregarNeuOculta) / (cantGeneraciones - 1);
-    	probAgregarNeuOculta= formatearDecimales(((t * (generacion - probAgregarNeuOculta)) + 1), 2);
+    	double t= (probAgregarNeuOcultaMinima - probAgregarNeuOcultaMaxima) / (cantGeneraciones - 1);
+    	probAgregarNeuOculta= formatearDecimales(((t * (generacion - 1)) + probAgregarNeuOcultaMaxima), 2);
     	
     	// Se actualiza la probabilidad de mutación una neurona en capa oculta
-    	double l= (probMutacionNeuMinima - probMutacionNeu) / (cantGeneraciones - 1);
-    	probMutacionNeu= formatearDecimales(((l * (generacion - probMutacionNeu)) + 1), 2);
+    	double l= (probMutacionNeuMinima - probMutacionNeuMaxima) / (cantGeneraciones - 1);
+    	probMutacionNeu= formatearDecimales(((l * (generacion - 1)) + probMutacionNeuMaxima), 2);
     	
     	// Se actualiza la desviación estandar
-    	double s= (desviacionEstandarMinima - desviacionEstandar) / (cantGeneraciones - 1);
-    	desviacionEstandar= formatearDecimales(((s * (generacion - desviacionEstandar)) + 1), 2);
+    	double s= (desviacionEstandarMinima - desviacionEstandarMaxima) / (cantGeneraciones - 1);
+    	desviacionEstandar= formatearDecimales(((s * (generacion - 1)) + desviacionEstandarMaxima), 2);
     	
     	System.out.println( "Prob. de eliminar "+ probEliminarNeuOculta 
     						+ " Prob. de agregar "+ probAgregarNeuOculta
