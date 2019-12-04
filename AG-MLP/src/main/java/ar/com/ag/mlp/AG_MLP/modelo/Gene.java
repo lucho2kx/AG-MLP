@@ -110,6 +110,6 @@ public class Gene {
     @Override
     public String toString() {
         return "Gene [wb=" + wb + ", w1=" + w1 + ", w2=" + w2 + ", w3=" + w3 + ", w4=" + w4 + ", w5=" + w5 + ", w6="
-                            + w6 + ", w7=" + w7 + ", ws=" + ws + "]";
+                            + w6 + ", w7=" + w7 + ", ws=" + ws + "]\n";
     }
 }

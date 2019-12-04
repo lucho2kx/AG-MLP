@@ -9,11 +9,11 @@ import ar.com.ag.mlp.AG_MLP.modelo.Gene;
 public class AG_MLP {
 	
     // Parámetros del problema
-    public static double probEliminarNeuOculta= 1.0;
-    public static double probAgregarNeuOculta= 0.4;
-    private static int cantMaxNeuOculta= 3;
-    private static int tamPoblacion= 3;
-    private static int cantGeneraciones= 2;
+    public static double probEliminarNeuOculta= 0.2;
+    public static double probAgregarNeuOculta= 0.9;
+    private static int cantMaxNeuOculta= 60;
+    private static int tamPoblacion= 64;
+    private static int cantGeneraciones= 100;
     // Mutación paramétrica
     public static double probMutacionNeu= 0.8;
     public static double desviacionEstandar = 1.0;
@@ -26,13 +26,13 @@ public class AG_MLP {
     private static SecureRandom srPesosBias = new SecureRandom();	
     
  // Variables para modificar parámetros 
-    private static double probEliminarNeuOcultaMaxima= 1.0;
-    private static double probAgregarNeuOcultaMaxima= 0.4;
+    private static double probEliminarNeuOcultaMaxima= 0.2;
+    private static double probAgregarNeuOcultaMaxima= 0.9;
     private static double probMutacionNeuMaxima= 0.8;
     private static double desviacionEstandarMaxima = 1.0;
     
     private static double probEliminarNeuOcultaMinima= 0.05;
-    private static double probAgregarNeuOcultaMinima= 0.05;
+    private static double probAgregarNeuOcultaMinima= 0.8;
     private static double probMutacionNeuMinima= 0.05;
     private static double desviacionEstandarMinima = 0.05;
     
@@ -223,6 +223,7 @@ public class AG_MLP {
     	
     	aptitud= poblacion.get(0).calcularFuncionDeEvaluacion();
     	mejorAptitud= aptitud;
+        System.out.println( "Cromosoma i="+ 0 + " => aptitud = " + aptitud );
     	for (i=1; i < tamPoblacion; i++ ) {
             // Se calcula la función de evaluación de cada cromosoma 
             aptitud= poblacion.get(i).calcularFuncionDeEvaluacion();
@@ -233,11 +234,13 @@ public class AG_MLP {
             System.out.println( "Cromosoma i="+ i + " => aptitud = " + aptitud );
         }
         System.out.println( "El Cromosoma de menor aptitud es "+ posicion + " => aptitud = " + mejorAptitud );
-        
+        System.out.println( "El Cromosoma con mejor aptitud es "+ tamPoblacion + " => aptitud = " + poblacion.get(tamPoblacion).getAptitud() );
         // Se guarda el cromosoma con mejor aptitud al final de la población
         if (mejorAptitud < poblacion.get(tamPoblacion).getAptitud()) {
             poblacion.remove(tamPoblacion);
             poblacion.add(poblacion.get(posicion));
+            System.out.println( "El Cromosoma con mejor aptitud es reemplazado");
+            
         }
        
     	return poblacion;
@@ -318,7 +321,7 @@ public class AG_MLP {
 
         System.out.println( "*************** Se inicializa la población ***************");
         poblacion= inicializarPoblacion();
-        System.out.println(poblacion.size());
+        //System.out.println(poblacion.size());
         for (int i=0; i < poblacion.size(); i++ ) {
             // Se calcula la función de evaluación de cada cromosoma 
             aptitud= poblacion.get(i).calcularFuncionDeEvaluacion();
@@ -362,5 +365,9 @@ public class AG_MLP {
             // Se incrementa la generación
             generacion= generacion + 1;
         }
+        System.out.println( "############################### Resultado ###############################" ); 
+       System.out.println( "Aptitud del mejor cromosoma es " + poblacion.get(tamPoblacion).getAptitud() );
+       System.out.println( "Cantidad de neurona de la capa oculta es " + poblacion.get(tamPoblacion).getGenes().size() );
+       System.out.println( "El mejor cromosoma " + poblacion.get(tamPoblacion).toString() );
     }
 }
